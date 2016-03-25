@@ -3,6 +3,7 @@
 
 #include "globals.h"
 
+
 class player : public entity{
 
 public:
@@ -17,7 +18,8 @@ public:
 	void move(int dir){
 
 		if (playerp->currentroom->roomexitp[dir] != NULL){
-			playerp->currentroom == playerp->currentroom->roomexitp[dir]->dst;
+
+			playerp->currentroom = playerp->currentroom->roomexitp[dir]->dst;
 		}
 		else{
 			printf("\nthere's no exit in that direction");
@@ -26,14 +28,6 @@ public:
 	}
 
 
-
-	template <typename temp>
-
-	void look(temp obj){
-
-		printf("\n%s", obj.desc);
-
-	}
 
 
 	void pick(item* obj){

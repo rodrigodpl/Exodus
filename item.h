@@ -9,8 +9,18 @@ class item : public entity{
 
 public:
 
+	
+
+public:
 
 
+	void insert (item* container){
+
+		
+
+
+
+	}
 
 };
 

@@ -10,6 +10,9 @@
 #define ROOM_NUM 16
 #define EXIT_NUM 22
 #define NULL 0
+#define HALF_BUFFER_LEN 15
+#define ERROR 0
+#define SUCCESS 0
 
 
 enum directions{

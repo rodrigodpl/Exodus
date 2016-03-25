@@ -20,6 +20,62 @@ public:
 
 	}
 
+	char* stringsplit(char* nounbuffer){
+
+		int i, j, k, z = 0;
+		char* auxbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
+
+
+
+		for (i = 0; i < VERB_AND_NOUN_BUFFER_LEN; i++){
+
+
+			//extract the first word
+			if (nounbuffer[i + 1] == EOF){
+
+				return(ERROR);
+			}
+
+			else if (nounbuffer[i + 1] == SPACE_KEY){
+
+				nounbuffer[i + 1] = EOF;
+
+
+				//ignore the preposition
+				for (j = i; j < VERB_AND_NOUN_BUFFER_LEN; j++){
+
+					if (nounbuffer[j + 1] == EOF){
+
+						return(ERROR);
+					}
+
+					else if (nounbuffer[j + 1] == SPACE_KEY){
+
+						//exctract the second word
+						for (k = j; k < VERB_AND_NOUN_BUFFER_LEN && nounbuffer[k] != EOF; k++){
+
+							auxbuffer[z] = nounbuffer[k];
+							z++;
+
+						}
+
+						return(auxbuffer);
+
+					}
+				}
+
+				
+
+
+			}
+		}
+
+		return(ERROR);
+
+	}
+
+			
+
 	union object{
 
 		int num;
@@ -29,7 +85,7 @@ public:
 
 	}obj;
 
-	int resolveobject(object& obj, char* objectname){
+	int solveobject(object& obj, char* objectname){
 
 
 		if (objectname == "north" || objectname == "n"){
@@ -71,7 +127,7 @@ public:
 			}
 			else if (objectname == playerp->currentroom->content[i]->name){
 
-				obj.itempointer = (item*)playerp->currentname->content[i];
+				obj.itempointer = (item*)playerp->currentroom->content[i];
 				return(ITEM_OUTPUT);
 			}
 		}
@@ -130,10 +186,11 @@ public:
 
 		if (verbbuffer == "move"){
 
-			switch (resolveobject(obj, nounbuffer)){
+			switch (solveobject(obj, nounbuffer)){
 
 			case DIR_OUTPUT:
-				playerp.move(obj.num);
+
+				playerp->move(obj.num);
 				break;
 
 			case NULL_OUTPUT:
@@ -157,11 +214,13 @@ public:
 
 		else if (verbbuffer == "look"){
 
-			switch (resolveobject(obj, nounbuffer)){
+			switch (solveobject(obj, nounbuffer)){
 
 			case DIR_OUTPUT:
+
 				if (playerp->currentroom->roomexitp[obj.num] != NULL){
-					playerp.look(playerp->currentroom->roomexitp[obj.num]);
+
+					playerp->currentroom->roomexitp[obj.num]->look;
 					break;
 				}
 				else{
@@ -170,15 +229,17 @@ public:
 				break;
 
 			case ROOM_OUTPUT:
-				playerp.look(obj.roompointer);
+
+				obj.roompointer->look;
 				break;
 
 			case ITEM_OUTPUT:
-				playerp.look(obj.itempointer);
+
+				obj.itempointer->look;
 				break;
 
 			case NULL_OUTPUT:
-				printf("\nPlease, specify the direction or the item you want to look at (north, east, south or west or an item name)");
+				printf("\nPlease, specify the direction or the item you want to look at (north, east, south or west, 'around' for the current room or an item name)");
 				break;
 
 			case ERROR_OUTPUT:
@@ -193,73 +254,141 @@ public:
 
 		else if (verbbuffer == "help"){
 
-			printf("help display ------------------------------------------------");
+			printf("\nhelp display ------------------------------------------------");
 		}
 
 		else if (verbbuffer == "pick"){
 
-			switch (resolveobject(obj, nounbuffer)){
+			switch (solveobject(obj, nounbuffer)){
 
-			case ITEM_OUTPUT{
+			case ITEM_OUTPUT:
 
-				player.pick(obj.itempointer);
+				playerp.pick(obj.itempointer);
 				break;
 
 			case NULL_OUTPUT:
 
 				printf("\nplease, specify what are you trying to pick (type an nearby item name)");
-
-			}
+				break;
 
 			case ERROR_OUTPUT:
 
-				printf("I just understood you as far you want to pick something");
+				printf("\nI just understood you as far you want to pick something");
+				break;
 
-			case default:
+			default:
 
-				printf("that's not an item!");
+				printf("\nThat's not an item!");
+
+			}
+
+		}
 
 
 		else if (verbbuffer == "drop"){
 
-			switch (resolveobject(obj, nounbuffer)){
+			switch (solveobject(obj, nounbuffer)){
 
-				case ITEM_OUTPUT{
+			case ITEM_OUTPUT:
 
-					player.drop(obj.itempointer);
+				playerp.drop(obj.itempointer);
+				break;
+
+			case NULL_OUTPUT:
+
+				printf("\nplease, specify what are you trying to drop (type an inventory stored item name)");
+				break;
+
+			case ERROR_OUTPUT:
+
+				printf("\nI just understood you as far you want to drop something");
+				break;
+
+			default:
+
+				printf("\nthat's not an item!");
+
+			}
+
+		}
+			
+		else if (verbbuffer == "insert"){
+
+			object container;
+
+
+			char* secondnoun = stringsplit(nounbuffer);
+
+			switch (solveobject(obj, nounbuffer)){
+
+			case ITEM_OUTPUT:
+
+				switch (solveobject(container, secondnoun)){
+
+				case ITEM_OUTPUT:
+
+					if (container.itempointer->iscontainer){
+
+						container.itempointer->insert(obj.itempointer);
+					}
+
 					break;
 
 				case NULL_OUTPUT:
 
-					printf("\nplease, specify what are you trying to drop (type an inventory stored item name)");
-
-				}
+					printf("insert %s into what?(try typing 'insert -object- into -container-)", obj.itempointer->name);
+					break;
 
 				case ERROR_OUTPUT:
 
-					printf("I just understood you as far you want to drop something");
+					printf("I just understood you as far as you want to insert %s into something", obj.itempointer->name);
+					break;
 
-				case default:
+				default:
 
-					printf("that's not an item!");
+					printf("that's not a container!");
+				}
+
+			case NULL_OUTPUT:
+
+				printf("\nInsert what? (try typing an item name)");
+				break;
+
+
+			case ERROR_OUTPUT:
+
+				printf("\nI you just understood you as far as you want to insert something");
+				break;
+
+			default:
+
+				printf("\That's not an item!");
+
+			}
+
+			delete[] secondnoun;
 
 		}
 
+		
+
+
 		else if (verbbuffer == "quit"){
 
-			delete nounbuffer;
-			delete verbbuffer;
+			delete[] nounbuffer;
+			delete[] verbbuffer;
 
 			return(0);
 
 		}
 
 		else{
+
 			printf("\nI didn't understand what do you want to do now");
 		}
 		
-		delete nounbuffer;
-		delete verbbuffer;
+		delete[] nounbuffer;
+		delete[] verbbuffer;
 
 		return(1);
 
