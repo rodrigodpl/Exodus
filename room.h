@@ -8,10 +8,19 @@ class room: public entity{
 
 public:
 
-	exit* roomexitp = new exit[MAX_EXIT_NUM];
+	exit* roomexitp;
 
+	room(){
 
+		roomexitp = new exit[MAX_EXIT_NUM];
 
+	}
+
+	~room(){
+
+		delete[] roomexitp;
+
+	}
 
 };
 

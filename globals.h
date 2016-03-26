@@ -3,6 +3,7 @@
 
 #define NAME_LEN 50
 #define DESCRIPTION_LEN 200
+#define MAX_BUFFER_LEN 200
 #define SPACE_KEY 32
 #define VERB_AND_NOUN_BUFFER_LEN 30
 #define CONTAINER_LEN 10
@@ -12,7 +13,9 @@
 #define NULL 0
 #define HALF_BUFFER_LEN 15
 #define ERROR 0
-#define SUCCESS 0
+#define SUCCESS 1
+#define NEWLINE 10
+#define DATA_LEN 8000
 
 
 enum directions{
@@ -25,14 +28,11 @@ enum directions{
 	
 };
 
-enum actions{
+enum parameters{
 
-	MOVE,
-	LOOK,
-	HELP,
-	QUIT,
-	PICK,
-	DROP, 
+	NAME_OR_DESC,
+	ROOM_SRC_OR_DST,
+	EXITS_OPEN,
 
 
 

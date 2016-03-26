@@ -10,14 +10,42 @@
 #include <stdio.h>
 
 
+
 class entity{
 
 public:
 
+	char* name;
+	char* desc;
+	entity* content;
+	bool iscontainer;
+	string* entitystringmanager;
 
-	char* name = new char[NAME_LEN];
-	char* desc = new char[DESCRIPTION_LEN];
-	entity* content = new entity[CONTAINER_LEN];
+	entity(){
+
+		char* name = new char[NAME_LEN];
+		char* desc = new char[DESCRIPTION_LEN];
+		iscontainer = false;
+		content = NULL;
+	}
+
+	entity(int containerlen){
+
+
+		char* name = new char[NAME_LEN];
+		char* desc = new char[DESCRIPTION_LEN];
+		entity* content = new entity[containerlen];
+		iscontainer = true;
+
+	}
+
+	~entity(){
+
+		delete[] name;
+		delete[] desc;
+		delete[] content;
+
+	}
 
 
 public:
@@ -33,11 +61,11 @@ public:
 
 	int getobjectcode(char* objname){
 
-		int i; 
-		
+		int i;
+
 		for (i = 0; i < CONTAINER_LEN; i++){
 
-			if (strcmp(this->content[i].name, objname, NAME_LEN)){
+			if (entitystringmanager->strcmp(this->content[i].name, objname)){
 
 				return(i);
 
@@ -66,19 +94,19 @@ public:
 		}
 
 		return(-1);
-
-
 	}
+
+
 
 	bool safeput(item* object, int objcode){
 
 		if (objcode != -1){
 
-			
+
 			this->content += objcode;
 			this->content = object;
 			this->content -= objcode;
-	
+
 			return(SUCCESS);
 
 		}
@@ -102,13 +130,33 @@ public:
 		}
 		else{
 
-			return(ERROR)
+			return(ERROR);
 		}
 
 	}
 
 
 
+	void moveitem(item* obj, entity* oldcontainer, int objcode){
+
+		if (this->safeput(obj, searchemptyspace())){
+
+			if (oldcontainer->safeerase(objcode)){
+
+				printf("\nitem inserted!");
+				return;
+			}
+
+			printf("Error erasing item!");
+			return;
+
+		}
+
+		printf("\nFull container! Try extracting something before");
+		return;
+
+	}
 }
+
 
 #endif //_ENTITY_H_

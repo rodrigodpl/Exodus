@@ -5,6 +5,7 @@
 
 
 
+
 class exit : public entity{
 
 public:
@@ -13,7 +14,7 @@ public:
 	room* dst;
 	bool isopen;
 
-
+	
 
 
 };

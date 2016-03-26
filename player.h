@@ -10,7 +10,17 @@ public:
 
 	room* currentroom;
 
+	player(){
 
+		
+
+	}
+
+	~player(){
+
+		delete currentroom;
+
+	}
 
 public:
 
@@ -26,61 +36,6 @@ public:
 		}
 
 	}
-
-
-
-
-	void pick(item* obj, int objectcode){
-
-		if (this->safeput(obj, searchemptyspace())){
-
-			if (this->currentroom->safeerase(objectcode)){
-
-				printf("\n%s picked!", obj->name);
-				return;
-			}
-
-			printf("Error erasing item!");
-			return;
-
-		}
-
-		printf("\nInventory full! Try dropping something before");
-		return;
-
-		
-
-	}
-
-
-
-	void drop(item* obj, int objectcode){
-
-		if (this->currentroom->safeput(obj, searchemptyspace())){
-
-			if (this->safeerase(objectcode)){
-
-				printf("\n%s dropped!", obj->name);
-				return;
-
-			}
-
-			printf("Error erasing item!");
-			return;
-
-		}
-		
-		printf("Full room! Try picking or inserting something before!");
-		return;
-
-
-	}
-
-
-
-
-
-
 
 
 };

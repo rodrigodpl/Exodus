@@ -5,31 +5,112 @@
 #include "globals.h"
 #include <stdio.h>
 
+
+
+
 class string{
 
 public:
 
-	void strcpy(char* src, char* dst){
+	char* verbbuffer;
+	char* nounbuffer;
 
-		while (*(src + 1) != 0){
-			*dst = *src;
-			dst++, src++;
-		}
+	string(){
 
-		*(dst + 1) = 0;
+		verbbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
+		nounbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
+
+	}
+
+	~string(){
+
+		delete[] verbbuffer;
+		delete[] nounbuffer;
+
 
 	}
 
 
-	bool strcmp(char* str1, char* str2, int len){
+
+public:
+
+	void injectdata(entity* receiver, int datalen, int receiveramount, int parameter){
+
 
 		int i;
 
-		for (i = 0; i < len; i++){
+		switch (parameter){
+
+		case NAME_OR_DESC:
+
+			char* data = new char[datalen];
+
+			for (i = 0; i < receiveramount; i++){
+
+				strcpy(data, receiver[i].name, NEWLINE);
+			}
+
+			delete[] data;
+			break;
+
+
+		case ROOM_SRC_OR_DST:
+
+			int* data = new int[datalen];
+
+			for (i = 0; i < receiveramount; i++){
+
+				strcpy(data, receiver[i].name, NEWLINE);
+			}
+
+			delete[] data;
+			break;
+
+
+		case EXITS_OPEN:
+
+			bool* data = new bool[datalen];
+
+			for (i = 0; i < receiveramount; i++){
+
+				strcpy(data, receiver[i].name, NEWLINE);
+			}
+
+			delete[] data;
+
+
+		}
+	}
+
+
+	void strcpy(char* src, char* dst, char delim){
+
+
+		while (*(src) != delim){
+			*dst = *src;
+			dst++, src++;
+		}
+
+		*(dst + 1) = EOF;
+
+
+	}
+
+
+	bool strcmp(char* str1, char* str2){
+
+		int i;
+
+		for (i = 0; i < MAX_BUFFER_LEN; i++){
 
 			if (str1[i] != str2[i]){
 
 				return(0);
+			}
+
+			if (str1[i] == EOF || str2[i] == EOF){
+
+				break;
 			}
 
 		}
@@ -39,7 +120,7 @@ public:
 	}
 
 
-	char* stringsplit(char* nounbuffer){
+	char* stringsplit(char* buffer){
 
 		int i, j, k, z = 0;
 		char* auxbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
@@ -50,30 +131,30 @@ public:
 
 
 			//extract the first word
-			if (nounbuffer[i + 1] == EOF){
+			if (buffer[i + 1] == EOF){
 
 				return(ERROR);
 			}
 
-			else if (nounbuffer[i + 1] == SPACE_KEY){
+			else if (buffer[i + 1] == SPACE_KEY){
 
-				nounbuffer[i + 1] = EOF;
+				buffer[i + 1] = EOF;
 
 
 				//ignore the preposition
 				for (j = i; j < VERB_AND_NOUN_BUFFER_LEN; j++){
 
-					if (nounbuffer[j + 1] == EOF){
+					if (buffer[j + 1] == EOF){
 
 						return(ERROR);
 					}
 
-					else if (nounbuffer[j + 1] == SPACE_KEY){
+					else if (buffer[j + 1] == SPACE_KEY){
 
 						//exctract the second word
-						for (k = j; k < VERB_AND_NOUN_BUFFER_LEN && nounbuffer[k] != EOF; k++){
+						for (k = j; k < VERB_AND_NOUN_BUFFER_LEN && buffer[k] != EOF; k++){
 
-							auxbuffer[z] = nounbuffer[k];
+							auxbuffer[z] = buffer[k];
 							z++;
 
 						}
@@ -95,37 +176,37 @@ public:
 
 
 
-	int readcommand(char* command){
+	void readcommand(char* command){
 
 		char* verbbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
 		verbbuffer[0] = EOF;
 		char* nounbuffer = new char[VERB_AND_NOUN_BUFFER_LEN];
 		nounbuffer[0] = EOF;
 
-		int i = 0, j = 0;
+		int i = 0, j = 0, k;
 
 		while (command[i + 1] != EOF){
 
-			verbbuffer[i] = command[i];
+			this->verbbuffer[i] = command[i];
 
 			if (command[i + 1] != SPACE_KEY){
 
+				k = i + 1;
 				i += 2;
 
 				while (command[i + 1] != EOF){
 
-					nounbuffer[j] = command[i];
+					this->nounbuffer[j] = command[i];
 					i++, j++;
 				}
-				j++;
-				nounbuffer[j] = 0;
+				
+				this->nounbuffer[j + 1] = 0;
 			}
 
-			i++;
+			
 		}
-
-		i++;
-		verbbuffer[i] = 0;
+		
+		this->verbbuffer[k] = 0;
 
 	}
 
