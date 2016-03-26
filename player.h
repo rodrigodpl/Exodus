@@ -15,11 +15,11 @@ public:
 public:
 
 
-	void move(int dir){
+	void move(exit* dir){
 
-		if (playerp->currentroom->roomexitp[dir] != NULL){
+		if (dir != NULL){
 
-			playerp->currentroom = playerp->currentroom->roomexitp[dir]->dst;
+			this->currentroom = dir->dst;
 		}
 		else{
 			printf("\nthere's no exit in that direction");
@@ -30,50 +30,47 @@ public:
 
 
 
-	void pick(item* obj){
+	void pick(item* obj, int objectcode){
 
-		int i, j;
-		for (i = 0; i < CONTAINER_LEN; i++){
+		if (this->safeput(obj, searchemptyspace())){
 
-			//puting the item in inventory
-			if (playerp->content[i] == NULL){
-				playerp->content[i] = obj;
-				
-				//erasing the item from the room
-				for (j = 0; j < CONTAINER_LEN; j++){
-					if (playerp->currentroom->content[j] == obj){
-						playerp->currentroom->content[j] = NULL;
-						return;
-					}
-				}
+			if (this->currentroom->safeerase(objectcode)){
+
+				printf("\n%s picked!", obj->name);
+				return;
 			}
+
+			printf("Error erasing item!");
+			return;
+
 		}
 
-		printf("\nyou have no space in inventory! Try dropping something before");
+		printf("\nInventory full! Try dropping something before");
 		return;
+
+		
 
 	}
 
-	void drop(item* obj){
 
-		int i, j;
-		for (i = 0; i < CONTAINER_LEN; i++){
 
-			//puting the item in the room
-			if (playerp->currentroom->content[i] == NULL){
-				playerp->currentroom->content[i] = obj;
+	void drop(item* obj, int objectcode){
 
-				//erasing the item from the inventory
-				for (j = 0; j < CONTAINER_LEN; j++){
-					if (playerp->content[j] == obj){
-						playerp->content[j] = NULL;
-						return;
-					}
-				}
+		if (this->currentroom->safeput(obj, searchemptyspace())){
+
+			if (this->safeerase(objectcode)){
+
+				printf("\n%s dropped!", obj->name);
+				return;
+
 			}
-		}
 
-		printf("\nyou have no space in the room! Try picking something before");
+			printf("Error erasing item!");
+			return;
+
+		}
+		
+		printf("Full room! Try picking or inserting something before!");
 		return;
 
 

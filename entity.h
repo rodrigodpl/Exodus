@@ -6,6 +6,7 @@
 #include "player.h"
 #include "item.h"
 #include "room.h"
+#include "string.h"
 #include <stdio.h>
 
 
@@ -16,7 +17,6 @@ public:
 
 	char* name = new char[NAME_LEN];
 	char* desc = new char[DESCRIPTION_LEN];
-	bool iscontainer;
 	entity* content = new entity[CONTAINER_LEN];
 
 
@@ -31,33 +31,80 @@ public:
 	}
 
 
+	int getobjectcode(char* objname){
 
+		int i; 
+		
+		for (i = 0; i < CONTAINER_LEN; i++){
 
-	void insert(item*& item){
+			if (strcmp(this->content[i].name, objname, NAME_LEN)){
 
-		int i;
-
-
-		if (this->iscontainer){
-
-			for (i = 0; i < CONTAINER_LEN; i++){
-
-				if (this->(content + i) == NULL){
-
-					container->(content + i) = this;
-
-				}
-				containerp++;
+				return(i);
 
 			}
+		}
+
+		return(-1);
+
+	}
+
+
+	int searchemptyspace(){
+
+		int i;
+		entity* entityp = this->content;
+
+		for (i = 0; i < CONTAINER_LEN; i++){
+
+			if (entityp == NULL){
+
+				return(i);
+			}
+
+			entityp++;
 
 		}
 
+		return(-1);
+
+
+	}
+
+	bool safeput(item* object, int objcode){
+
+		if (objcode != -1){
+
+			
+			this->content += objcode;
+			this->content = object;
+			this->content -= objcode;
+	
+			return(SUCCESS);
+
+		}
 		else{
 
-			printf("\nThat's not a container!");
-
+			return(ERROR);
 		}
+
+	}
+
+	bool safeerase(int objcode){
+
+		if (objcode != -1){
+
+			this->content += objcode;
+			this->content = NULL;
+			this->content -= objcode;
+
+
+			return(SUCCESS);
+		}
+		else{
+
+			return(ERROR)
+		}
+
 	}
 
 
