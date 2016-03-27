@@ -19,33 +19,6 @@ public:
 	char* desc;
 	entity* content;
 	bool iscontainer;
-	string* entitystringmanager;
-
-	entity(){
-
-		char* name = new char[NAME_LEN];
-		char* desc = new char[DESCRIPTION_LEN];
-		iscontainer = false;
-		content = NULL;
-	}
-
-	entity(int containerlen){
-
-
-		char* name = new char[NAME_LEN];
-		char* desc = new char[DESCRIPTION_LEN];
-		entity* content = new entity[containerlen];
-		iscontainer = true;
-
-	}
-
-	~entity(){
-
-		delete[] name;
-		delete[] desc;
-		delete[] content;
-
-	}
 
 
 public:
@@ -54,7 +27,8 @@ public:
 
 	void look(){
 
-		printf("%s, %s", this->name, this->desc);
+
+		printf("\n%s, %s", this->name, this->desc);
 
 	}
 
@@ -65,7 +39,7 @@ public:
 
 		for (i = 0; i < CONTAINER_LEN; i++){
 
-			if (entitystringmanager->strcmp(this->content[i].name, objname)){
+			if (stringmanager.strcmp(this->content[i].name, objname)){
 
 				return(i);
 
@@ -143,7 +117,7 @@ public:
 
 			if (oldcontainer->safeerase(objcode)){
 
-				printf("\nitem inserted!");
+				printf("\nOperation done!");
 				return;
 			}
 
@@ -152,10 +126,11 @@ public:
 
 		}
 
-		printf("\nFull container! Try extracting something before");
+		printf("\nFull container! Try emptying it before");
 		return;
 
 	}
+
 }
 
 

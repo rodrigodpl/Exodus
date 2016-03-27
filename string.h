@@ -14,6 +14,7 @@ public:
 
 	char* verbbuffer;
 	char* nounbuffer;
+	
 
 	string(){
 
@@ -30,70 +31,50 @@ public:
 
 	}
 
+	friend class entity;
+	friend class room;
+	friend class exit;
+	friend class item;
+	friend class player;
+	friend class world;
 
 
 public:
 
-	void injectdata(entity* receiver, int datalen, int receiveramount, int parameter){
 
+	void strcpy(char* src, char* dst){
 
-		int i;
-
-		switch (parameter){
-
-		case NAME_OR_DESC:
-
-			char* data = new char[datalen];
-
-			for (i = 0; i < receiveramount; i++){
-
-				strcpy(data, receiver[i].name, NEWLINE);
-			}
-
-			delete[] data;
-			break;
-
-
-		case ROOM_SRC_OR_DST:
-
-			int* data = new int[datalen];
-
-			for (i = 0; i < receiveramount; i++){
-
-				strcpy(data, receiver[i].name, NEWLINE);
-			}
-
-			delete[] data;
-			break;
-
-
-		case EXITS_OPEN:
-
-			bool* data = new bool[datalen];
-
-			for (i = 0; i < receiveramount; i++){
-
-				strcpy(data, receiver[i].name, NEWLINE);
-			}
-
-			delete[] data;
-
-
-		}
-	}
-
-
-	void strcpy(char* src, char* dst, char delim){
-
-
-		while (*(src) != delim){
+		while (*(src) != EOF){
 			*dst = *src;
 			dst++, src++;
 		}
 
 		*(dst + 1) = EOF;
 
+	}
 
+
+
+	int getline(char* src, char* dst, char delim, int index){
+
+		int i, j = index;
+
+		for (i = 0; i < MAX_BUFFER_LEN; i++) {
+
+			src[index] = dst[i];
+			index++;
+			
+			if (*(src) != delim && *(src) != EOF){
+				dst[i] = EOF;
+				return(i);
+
+			}
+
+		}
+
+		printf("EOF or delim character not found!");
+		return(0);
+		
 	}
 
 
@@ -217,7 +198,7 @@ public:
 
 
 
-};
+}stringmanager;
 
 
 

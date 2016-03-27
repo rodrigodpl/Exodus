@@ -14,21 +14,20 @@ public:
 	player* playerp;
 	room* map;
 	exit* exitp;
-	string* worldstringmanager;
 
 	world(){
+
+
 
 		playerp = new player;
 		map = new room[ROOM_NUM];
 		exitp = new exit[EXIT_NUM];
-		worldstringmanager = new string;
 
 	}
 
 	~world(){
 
 		delete playerp;
-		delete worldstringmanager;
 		delete[] map;
 		delete[] exitp;
 
@@ -64,29 +63,29 @@ public:
 	int solveobject(object& obj, object& obj2, char* objectname){
 
 
-		if (worldstringmanager->strcmp(objectname, "north") || worldstringmanager->strcmp(objectname, "n")){
+		if (stringmanager.strcmp(objectname, "north") || stringmanager.strcmp(objectname, "n")){
 
 			obj.num = (int)NORTH;
 			return(DIR_OUTPUT);
 		}
 
-		if (worldstringmanager->strcmp(objectname, "east") || worldstringmanager->strcmp(objectname, "e")){
+		if (stringmanager.strcmp(objectname, "east") || stringmanager.strcmp(objectname, "e")){
 			obj.num = (int)EAST;
 			return(DIR_OUTPUT);
 		}
 
-		if (worldstringmanager->strcmp(objectname, "south") || worldstringmanager->strcmp(objectname, "s")){
+		if (stringmanager.strcmp(objectname, "south") || stringmanager.strcmp(objectname, "s")){
 			obj.num = (int)SOUTH;
 			return(DIR_OUTPUT);
 		}
 
-		if (worldstringmanager->strcmp(objectname, "west") || worldstringmanager->strcmp(objectname, "w")){
+		if (stringmanager.strcmp(objectname, "west") || stringmanager.strcmp(objectname, "w")){
 			obj.num = (int)WEST;
 			return(DIR_OUTPUT);
 		}
 
 
-		if (worldstringmanager->strcmp(objectname, "around")){
+		if (stringmanager.strcmp(objectname, "around")){
 
 			obj.roompointer = (room*)playerp->currentroom;
 			return(ROOM_OUTPUT);
@@ -138,15 +137,15 @@ public:
 	int executecommand(char* verbbuffer, char* nounbuffer){
 
 
-		if ((worldstringmanager->strcmp(verbbuffer, "move")) || (worldstringmanager->strcmp(verbbuffer, "north"))
-			|| (worldstringmanager->strcmp(verbbuffer, "east")) || (worldstringmanager->strcmp(verbbuffer, "south"))
-			|| (worldstringmanager->strcmp(verbbuffer, "west")) || (worldstringmanager->strcmp(verbbuffer, "n"))
-			|| (worldstringmanager->strcmp(verbbuffer, "e")) || (worldstringmanager->strcmp(verbbuffer, "s"))
-			|| (worldstringmanager->strcmp(verbbuffer, "s"))){
+		if ((stringmanager.strcmp(verbbuffer, "move")) || (stringmanager.strcmp(verbbuffer, "north"))
+			|| (stringmanager.strcmp(verbbuffer, "east")) || (stringmanager.strcmp(verbbuffer, "south"))
+			|| (stringmanager.strcmp(verbbuffer, "west")) || (stringmanager.strcmp(verbbuffer, "n"))
+			|| (stringmanager.strcmp(verbbuffer, "e")) || (stringmanager.strcmp(verbbuffer, "s"))
+			|| (stringmanager.strcmp(verbbuffer, "s"))){
 
-			if (!(worldstringmanager->strcmp(verbbuffer, "move"))){
+			if (!(stringmanager.strcmp(verbbuffer, "move"))){
 
-				worldstringmanager->strcpy(verbbuffer, nounbuffer, EOF);
+				stringmanager.strcpy(verbbuffer, nounbuffer);
 			}
 
 			switch (solveobject(obj, obj2, nounbuffer)){
@@ -154,7 +153,7 @@ public:
 
 			case DIR_OUTPUT:
 
-				playerp->move(&(playerp->currentroom->roomexitp[obj.num]));
+				playerp->move(exitp->searchexit(playerp->currentroom, obj.num));				
 				break;
 
 			case NULL_OUTPUT:
@@ -176,21 +175,18 @@ public:
 
 
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "look"))){
+		else if ((stringmanager.strcmp(verbbuffer, "look"))){
 
 			switch (solveobject(obj, obj2, nounbuffer)){
 
 			case DIR_OUTPUT:
 
-				exit* exitp = playerp->currentroom->roomexitp;
-
-				if ((exitp + obj.num) != NULL){
-
-					playerp->currentroom->roomexitp[obj.num].look;
-					break;
+				exit* auxexitp = exitp->searchexit(playerp->currentroom, obj.num);
+				if (auxexitp != NULL){
+					auxexitp->look;
 				}
 				else{
-					printf("\nThere's nothing in that direction");
+					printf("there's no exit in that direction");
 				}
 				break;
 
@@ -223,12 +219,12 @@ public:
 		}
 
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "help"))){
+		else if ((stringmanager.strcmp(verbbuffer, "help"))){
 
 			printf("\nhelp display ------------------------------------------------");
 		}
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "pick"))){
+		else if ((stringmanager.strcmp(verbbuffer, "pick"))){
 
 			switch (solveobject(obj, obj2, nounbuffer)){
 
@@ -261,7 +257,7 @@ public:
 		}
 
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "drop"))){
+		else if ((stringmanager.strcmp(verbbuffer, "drop"))){
 
 			switch (solveobject(obj, obj2, nounbuffer)){
 
@@ -294,11 +290,11 @@ public:
 		}
 
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "insert"))){
+		else if ((stringmanager.strcmp(verbbuffer, "insert"))){
 
 			object newcontainer;
 
-			char* secondnoun = worldstringmanager->stringsplit(nounbuffer);
+			char* secondnoun = stringmanager.stringsplit(nounbuffer);
 
 			switch (solveobject(obj, obj2, nounbuffer)){
 
@@ -396,7 +392,7 @@ public:
 
 
 
-		else if ((worldstringmanager->strcmp(verbbuffer, "quit"))){
+		else if ((stringmanager.strcmp(verbbuffer, "quit"))){
 
 
 			return(0);

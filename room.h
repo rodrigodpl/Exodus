@@ -3,22 +3,30 @@
 
 #include "globals.h"
 #include "exit.h"
+#include "string.h"
 
 class room: public entity{
 
 public:
 
-	exit* roomexitp;
 
 	room(){
 
-		roomexitp = new exit[MAX_EXIT_NUM];
+		this->iscontainer = true;
+		this->content = new entity[CONTAINER_LEN];
+
+		roomnameindex = (stringmanager.getline(ROOM_NAMES, this->name, NEWLINE, roomnameindex) + 1);
+		roomdescindex = (stringmanager.getline(ROOM_DESC, this->desc, NEWLINE, roomdescindex) + 1);
+		
 
 	}
 
 	~room(){
 
-		delete[] roomexitp;
+		delete[] name;
+		delete[] desc;
+		delete[] content;
+		
 
 	}
 

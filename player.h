@@ -9,10 +9,12 @@ class player : public entity{
 public:
 
 	room* currentroom;
+	item* equippeditems;
 
 	player(){
 
-		
+		equippeditems = new item[MAX_EQUIP_SLOTS];
+
 
 	}
 
@@ -25,14 +27,11 @@ public:
 public:
 
 
-	void move(exit* dir){
+	void move(exit* exitpointer){
 
-		if (dir != NULL){
+		if (exitpointer != NULL){
 
-			this->currentroom = dir->dst;
-		}
-		else{
-			printf("\nthere's no exit in that direction");
+			this->currentroom = exitpointer->dst;
 		}
 
 	}
