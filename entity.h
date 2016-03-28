@@ -3,13 +3,10 @@
 
 
 #include "globals.h"
-#include "player.h"
-#include "item.h"
-#include "room.h"
 #include "string.h"
 #include <stdio.h>
 
-
+class item;
 
 class entity{
 
@@ -17,8 +14,9 @@ public:
 
 	char* name;
 	char* desc;
-	entity* content;
+	item** content;
 	bool iscontainer;
+	int containerlen;
 
 
 public:
@@ -28,7 +26,7 @@ public:
 	void look(){
 
 
-		printf("\n%s, %s", this->name, this->desc);
+		printf("\n%s, %s", name, desc);
 
 	}
 
@@ -37,9 +35,9 @@ public:
 
 		int i;
 
-		for (i = 0; i < CONTAINER_LEN; i++){
+		for (i = 0; i < containerlen && content[i] != NULL; i++){
 
-			if (stringmanager.strcmp(this->content[i].name, objname)){
+			if (stringmanager.strcmp(content[i]->name, objname)){
 
 				return(i);
 
@@ -47,57 +45,31 @@ public:
 		}
 
 		return(-1);
-
 	}
 
 
-	int searchemptyspace(){
+	bool put(item* object){
 
 		int i;
-		entity* entityp = this->content;
 
-		for (i = 0; i < CONTAINER_LEN; i++){
+		for (i = 0; i < containerlen; i++){
 
-			if (entityp == NULL){
+			if (content[i] == NULL){
 
-				return(i);
+				content[i] = object;
+				return(SUCCESS);
 			}
-
-			entityp++;
-
 		}
 
-		return(-1);
-	}
-
-
-
-	bool safeput(item* object, int objcode){
-
-		if (objcode != -1){
-
-
-			this->content += objcode;
-			this->content = object;
-			this->content -= objcode;
-
-			return(SUCCESS);
-
-		}
-		else{
-
-			return(ERROR);
-		}
+		return(ERROR);
 
 	}
 
-	bool safeerase(int objcode){
+	bool erase(int objcode){
 
 		if (objcode != -1){
 
-			this->content += objcode;
-			this->content = NULL;
-			this->content -= objcode;
+			content[objcode] = NULL;
 
 
 			return(SUCCESS);
@@ -113,9 +85,9 @@ public:
 
 	void moveitem(item* obj, entity* oldcontainer, int objcode){
 
-		if (this->safeput(obj, searchemptyspace())){
+		if (put(obj)){
 
-			if (oldcontainer->safeerase(objcode)){
+			if (oldcontainer->erase(objcode)){
 
 				printf("\nOperation done!");
 				return;

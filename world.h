@@ -2,8 +2,11 @@
 #define __WORLD_H__
 
 
-#include "entity.h"
 #include "string.h"
+#include "room.h"
+#include "passage.h"
+#include "player.h"
+#include "item.h"
 
 
 class world{
@@ -13,7 +16,7 @@ public:
 
 	player* playerp;
 	room* map;
-	exit* exitp;
+	passage* exitp;
 
 	world(){
 
@@ -21,7 +24,15 @@ public:
 
 		playerp = new player;
 		map = new room[ROOM_NUM];
-		exitp = new exit[EXIT_NUM];
+		exitp = new passage[PASSAGE_NUM];
+
+
+		int i;
+		for (i = 0; i < PASSAGE_NUM; i++){
+
+			exitp[i].initpassages(map, i);
+
+		}
 
 	}
 
@@ -37,6 +48,8 @@ public:
 
 public:
 
+
+
 	union object{
 
 		int num;
@@ -46,19 +59,6 @@ public:
 
 	}obj, obj2;
 
-	void init(){
-
-		int i;
-
-		for (i = 0; i < ROOM_NUM; i++){
-
-			
-
-
-		}
-
-
-	}
 
 	int solveobject(object& obj, object& obj2, char* objectname){
 
@@ -70,11 +70,13 @@ public:
 		}
 
 		if (stringmanager.strcmp(objectname, "east") || stringmanager.strcmp(objectname, "e")){
+
 			obj.num = (int)EAST;
 			return(DIR_OUTPUT);
 		}
 
 		if (stringmanager.strcmp(objectname, "south") || stringmanager.strcmp(objectname, "s")){
+
 			obj.num = (int)SOUTH;
 			return(DIR_OUTPUT);
 		}
@@ -87,7 +89,7 @@ public:
 
 		if (stringmanager.strcmp(objectname, "around")){
 
-			obj.roompointer = (room*)playerp->currentroom;
+			obj.roompointer = playerp->currentroom;
 			return(ROOM_OUTPUT);
 		}
 
@@ -98,8 +100,7 @@ public:
 
 		if (playercode != -1){
 
-			entity* entityp = playerp->content;
-			obj.itempointer = (item*)(entityp + playercode);
+			obj.itempointer = playerp->content[playercode];
 			obj2.num = playercode;
 			return(ITEM_FROMPLAYER_OUTPUT);
 
@@ -109,8 +110,7 @@ public:
 
 		if (roomcode != -1){
 
-			entity* entityp = playerp->currentroom->content;
-			obj.itempointer = (item*)(entityp + roomcode);
+			playerp->currentroom->content[roomcode];
 			obj2.num = roomcode;
 			return(ITEM_FROMROOM_OUTPUT);
 
@@ -153,7 +153,7 @@ public:
 
 			case DIR_OUTPUT:
 
-				playerp->move(exitp->searchexit(playerp->currentroom, obj.num));				
+				playerp->move(exitp->searchpassage(playerp->currentroom, obj.num));				
 				break;
 
 			case NULL_OUTPUT:
@@ -181,9 +181,11 @@ public:
 
 			case DIR_OUTPUT:
 
-				exit* auxexitp = exitp->searchexit(playerp->currentroom, obj.num);
+				passage* auxexitp;
+
+				auxexitp = exitp->searchpassage(playerp->currentroom, obj.num);
 				if (auxexitp != NULL){
-					auxexitp->look;
+					auxexitp->look();
 				}
 				else{
 					printf("there's no exit in that direction");
@@ -192,17 +194,17 @@ public:
 
 			case ROOM_OUTPUT:
 
-				obj.roompointer->look;
+				obj.roompointer->look();
 				break;
 
 			case ITEM_FROMPLAYER_OUTPUT:
 
-				obj.itempointer->look;
+				obj.itempointer->look();
 				break;
 
 			case ITEM_FROMROOM_OUTPUT:
 
-				obj.itempointer->look;
+				obj.itempointer->look();
 				break;
 
 			case NULL_OUTPUT:
@@ -293,6 +295,8 @@ public:
 		else if ((stringmanager.strcmp(verbbuffer, "insert"))){
 
 			object newcontainer;
+			int roomposition;
+			int inventoryposition;
 
 			char* secondnoun = stringmanager.stringsplit(nounbuffer);
 
@@ -300,7 +304,7 @@ public:
 
 			case ITEM_FROMPLAYER_OUTPUT:
 
-				int inventoryposition = obj2.num;
+				inventoryposition = obj2.num;
 
 				switch (solveobject(newcontainer, obj2, secondnoun)){
 
@@ -341,7 +345,7 @@ public:
 
 			case ITEM_FROMROOM_OUTPUT:
 
-				int roomposition = obj2.num;
+				roomposition = obj2.num;
 
 				switch (solveobject(newcontainer, obj2, secondnoun)){
 
@@ -381,7 +385,7 @@ public:
 
 			default:
 
-				printf("\That's not an item!");
+				printf("\nThat's not an item!");
 
 			}
 

@@ -33,7 +33,7 @@ public:
 
 	friend class entity;
 	friend class room;
-	friend class exit;
+	friend class passage;
 	friend class item;
 	friend class player;
 	friend class world;
@@ -168,7 +168,7 @@ public:
 
 		while (command[i + 1] != EOF){
 
-			this->verbbuffer[i] = command[i];
+			verbbuffer[i] = command[i];
 
 			if (command[i + 1] != SPACE_KEY){
 
@@ -177,17 +177,17 @@ public:
 
 				while (command[i + 1] != EOF){
 
-					this->nounbuffer[j] = command[i];
+					nounbuffer[j] = command[i];
 					i++, j++;
 				}
 				
-				this->nounbuffer[j + 1] = 0;
+				nounbuffer[j + 1] = 0;
 			}
 
 			
 		}
 		
-		this->verbbuffer[k] = 0;
+		verbbuffer[k] = 0;
 
 	}
 

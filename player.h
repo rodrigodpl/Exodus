@@ -2,39 +2,70 @@
 #define __PLAYER_H__
 
 #include "globals.h"
+#include "entity.h"
 
+class room;
+class item;
+class passage;
 
 class player : public entity{
 
 public:
 
 	room* currentroom;
-	item* equippeditems;
+	item** equippeditems;
+
 
 	player(){
 
-		equippeditems = new item[MAX_EQUIP_SLOTS];
+		int i;
 
+		name = NULL;
+		desc = NULL;
+
+		iscontainer = true;
+
+		containerlen = PLAYER_INIT_INVSIZE;
+
+		equippeditems = new item*[MAX_EQUIP_SLOTS];
+
+		for (i = 0; i < MAX_EQUIP_SLOTS; i++){
+
+			equippeditems[i] = NULL;
+			
+		}
+
+		content = new item*[PLAYER_INIT_INVSIZE];
+
+		for (i = 0; i < PLAYER_INIT_INVSIZE; i++){
+
+			content[i] = NULL;
+
+		}
 
 	}
 
 	~player(){
 
 		delete currentroom;
+		delete[] equippeditems;
+		delete[] content;
 
 	}
 
 public:
 
 
-	void move(exit* exitpointer){
+	void move(passage* passagepointer){
 
-		if (exitpointer != NULL){
+		if (passagepointer != NULL){
 
-			this->currentroom = exitpointer->dst;
+			currentroom = passagepointer->dst;
 		}
 
 	}
+
+	
 
 
 };

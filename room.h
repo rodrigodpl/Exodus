@@ -1,22 +1,41 @@
 #ifndef __ROOM_H__
 #define __ROOM_H__
 
+
 #include "globals.h"
-#include "exit.h"
+#include "entity.h"
 #include "string.h"
 
-class room: public entity{
+class item;
+
+class room : public entity{
 
 public:
+
+	int containerlen;
 
 
 	room(){
 
-		this->iscontainer = true;
-		this->content = new entity[CONTAINER_LEN];
+		name = new char[NAME_LEN];
+		desc = new char[DESCRIPTION_LEN];
 
-		roomnameindex = (stringmanager.getline(ROOM_NAMES, this->name, NEWLINE, roomnameindex) + 1);
-		roomdescindex = (stringmanager.getline(ROOM_DESC, this->desc, NEWLINE, roomdescindex) + 1);
+		roomnameindex = (stringmanager.getline(ROOM_NAMES, name, NEWLINE, roomnameindex) + 1);
+		roomdescindex = (stringmanager.getline(ROOM_DESC, desc, NEWLINE, roomdescindex) + 1);
+
+
+		int i;
+
+		iscontainer = true;
+		containerlen = ROOM_CONTAINER_LEN;
+		content = new item*[ROOM_CONTAINER_LEN];
+
+		for (i = 0; i < ROOM_CONTAINER_LEN; i++){
+
+			content[i] = NULL;
+
+		}
+
 		
 
 	}
@@ -29,6 +48,7 @@ public:
 		
 
 	}
+
 
 };
 
