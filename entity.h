@@ -1,109 +1,30 @@
-#ifndef __ENTITY_H__
-#define __ENTITY_H__
+#ifndef _ENTITY_H_
+#define _ENTITY_H_
 
+#include "Data.h"
+#include "String.h"
+#include "Dyn_Array.h"
+#include <cstdio>
 
-#include "globals.h"
-#include "string.h"
-#include <stdio.h>
-
-class item;
+class string;
 
 class entity{
 
 public:
 
-	char* name;
-	char* desc;
-	item** content;
-	bool iscontainer;
-	int containerlen;
-
+	dyn_array<entity>* content;
+	string* name;
+	string* desc;
+	uint nature;
 
 public:
 
+	void getitem(entity* old_container, string& itemname);
+	entity* searchitem(string& itemname);
 
-
-	void look(){
-
-
-		printf("\n%s, %s", name, desc);
-
-	}
-
-
-	int getobjectcode(char* objname){
-
-		int i;
-
-		for (i = 0; i < containerlen && content[i] != NULL; i++){
-
-			if (stringmanager.strcmp(content[i]->name, objname)){
-
-				return(i);
-
-			}
-		}
-
-		return(-1);
-	}
-
-
-	bool put(item* object){
-
-		int i;
-
-		for (i = 0; i < containerlen; i++){
-
-			if (content[i] == NULL){
-
-				content[i] = object;
-				return(SUCCESS);
-			}
-		}
-
-		return(ERROR);
-
-	}
-
-	bool erase(int objcode){
-
-		if (objcode != -1){
-
-			content[objcode] = NULL;
-
-
-			return(SUCCESS);
-		}
-		else{
-
-			return(ERROR);
-		}
-
-	}
+};
 
 
 
-	void moveitem(item* obj, entity* oldcontainer, int objcode){
 
-		if (put(obj)){
-
-			if (oldcontainer->erase(objcode)){
-
-				printf("\nOperation done!");
-				return;
-			}
-
-			printf("Error erasing item!");
-			return;
-
-		}
-
-		printf("\nFull container! Try emptying it before");
-		return;
-
-	}
-
-}
-
-
-#endif //_ENTITY_H_
+#endif

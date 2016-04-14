@@ -1,29 +1,24 @@
-
-#include "world.h"
-#include "globals.h"
-#include "string.h"
+#include "World.h"
+#include "Entity.h"
+#include <cstdio>
 
 int main(void){
 
-	world* worldp = new world;
-	char* command = new char[VERB_AND_NOUN_BUFFER_LEN * 2];
+	world main_world;
+	main_world.Init();
 
-	worldp->playerp->currentroom->look();
+	char buffer[200];
+	fgets(buffer, 200, stdin);
+	string player_input(buffer);
 
+	main_world.look(CURRENT_ROOM, player_input); //player input should a void string//
 
-	do {
+	while (main_world.executecommand(player_input)){
 
-		worldp->playerp->currentroom->look();
-
-		fgets(command, VERB_AND_NOUN_BUFFER_LEN * 2, stdin);
-		stringmanager.readcommand(command);
-
-
-	} while (worldp->executecommand(stringmanager.verbbuffer, stringmanager.nounbuffer));
-
-
-	delete[] worldp;
-	delete[] command;
+		char buffer[200];
+		fgets(buffer, 200, stdin);
+		string player_input(buffer);
+	} 
 
 	return(0);
 
