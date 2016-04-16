@@ -11,6 +11,7 @@ public:
 
 	int itemslot;
 	bool iscontainer;
+	int initial_location;
 
 public:
 

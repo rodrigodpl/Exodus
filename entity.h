@@ -12,10 +12,9 @@ class entity{
 
 public:
 
-	dyn_array<entity>* content;
+	dyn_array<entity*>* content;
 	string* name;
 	string* desc;
-	uint nature;
 
 public:
 

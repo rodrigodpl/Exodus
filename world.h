@@ -20,18 +20,15 @@ public:
 
 public:
 
-
-
 	~world();
 	void Init();
-	bool executecommand(string player_input);
+	bool executecommand(string& player_input);
 	exit* searchexit(room* src, int direction);
 	void look(int origin, string lookat);
+	void recurrent_look();
 
 
 };
-
-extern world* worldp;
 
 
 #endif

@@ -1,4 +1,5 @@
 #include "String.h"
+#include "Dyn_Array.h"
 #include "World.h"
 #include "Data.h"
 
@@ -16,20 +17,46 @@ string::string(const char* src){
 		strcpy_s(src, i, str);
 	}
 
-}
-
-string::string(const string& src){
-
-	uint i = src.str_len();
-
-	str = new char[i + 1];
-	strcpy_s(src.str, i, str);
 
 }
+
 
 string::~string(){
 
-	delete[] str;
+	uint i;
+
+	for (i = 0; i > str_len(); i++){
+		delete str;
+		str++;
+	}
+
+}
+
+dyn_array<string*>* string::tokenize(){
+
+	uint i = 0, j = 0;
+	
+
+	dyn_array<string*>*array_pointer = new dyn_array<string*>(5);
+
+	while (str[i] != '\0'){
+
+		char* word_buffer = new char[50];;
+		while (str[i] != ' ' && str[i] != ',' && str[i] != '.' && str[i] != '\0' && str[i] != '\n'){
+			word_buffer[j] = str[i];
+			i++;
+			j++;
+		}
+
+		word_buffer[j] = '\0';
+
+		string* word = new string(word_buffer);
+		array_pointer->pushback(word);
+		i++;
+		delete[] word_buffer;
+		j = 0;
+	}
+	return (array_pointer);
 
 }
 
@@ -38,13 +65,13 @@ void string::strcpy_s(const char* src, uint max_str_len, char* dst){
 
 	uint i;
 
-	for (i = 0; i < (max_str_len) && str[i] != '\0'; i++){
+	for (i = 0; i <= (max_str_len) && src[i] != '\0'; i++){
 
 		dst[i] = src[i];
 
 	}
 
-	dst[i + 1] = '\0';
+	dst[i] = '\0';
 
 }
 
@@ -56,7 +83,7 @@ unsigned int string::str_len() const{
 
 		if (str[i] != '\0'){
 
-			return (i - 1);
+			return (i);
 		}
 
 	}
@@ -69,60 +96,20 @@ unsigned int string::str_len_char(const char* src) const{
 
 	for (i = 0; i < MAX_BUFFER_LEN; i++){
 
-		if (src[i] != '\0'){
+		if (src[i] == '\0'){
 
-			return (i - 1);
+			return (i);
 		}
 
 	}
 	return(0);
 }
 
-bool string::isempty() const{
-
-	if (str[0]){
-		return(false);
-	}
-	return(true);
-
-}
-
-string string::split(){
-
-	uint i = 0;
-	char buffer[50];
-
-	while(str[i] == ' ' || str[i] == ',' || str[i] == '.' || str[i] == '\0' || str[i] == '\n'){
-		buffer[i] = str[i];
-		i++;
-	}
-
-	buffer[i + 1] = '\0';
-
-	string word(buffer);
-	return (word);
-
-}
-
-
-bool string::operator == (const string& str2){
-
-	return(str_cmp_S(str2.str));
-
-}
-
-void string::operator = (const string& str2){
-
-	str = str2.str;
-
-}
-
 bool string::str_cmp_S(const char* str2){
 
 	uint i;
-	uint len = str_len() + 1;
 
-	for (i = 0; i < len; i++){
+	for (i = 0; str[i - 1] != '\0' || str[i - 1] != '\0'; i++){
 
 		if (str[i] != str2[i]){
 
@@ -137,7 +124,7 @@ bool string::str_cmp_S(const char* str2){
 }
 
 
-int string::readsubject(){
+int string::readsubject(world* worldp){
 
 	if (str_cmp_S("north") || str_cmp_S("n")){
 		return(NORTH);
@@ -148,25 +135,41 @@ int string::readsubject(){
 	if (str_cmp_S("south") || str_cmp_S("s")){
 		return(SOUTH);
 	}
-	if (str_cmp_S("north") || str_cmp_S("n")){
+	if (str_cmp_S("west") || str_cmp_S("w")){
 		return(WEST);
 	}
-
+	if (str_cmp_S("inventory")){
+		return(INVENTORY);
+	}
+	if (str_cmp_S("equip")){
+		return(EQUIP);
+	}
 	uint i;
 
 	for (i = 0; i < worldp->playerp->content->num_elem; i++){
 
-		if (this == worldp->playerp->content->buffer[i].name){
+		if (str_cmp_S(worldp->playerp->content->buffer[i]->name->str)){
 			return(PLAYER_ITEM);
 		}
 	}
 
 	for (i = 0; i < worldp->playerp->currentroom->content->num_elem; i++){
 
-		if (this == worldp->playerp->currentroom->content->buffer[i].name){
+		if (str_cmp_S(worldp->playerp->currentroom->content->buffer[i]->name->str)){
 			return(ROOM_ITEM);
 		}
 	}
+
+	for (i = 0; i < MAX_EQUIP_SLOTS; i++){
+
+		if (worldp->playerp->equippeditems[i] != NULL){
+			if (str_cmp_S(worldp->playerp->equippeditems[i]->name->str)){
+				return(PLAYER_EQUIPPED_ITEM);
+			}
+		}
+	}
+
+
 
 	if (str_cmp_S("around")){
 		return(CURRENT_ROOM);
@@ -183,6 +186,15 @@ int string::readaction(){
 	}
 	if (str_cmp_S("help")){
 		return(HELP);
+	}
+	if (str_cmp_S("look")){
+		return(LOOK);
+	}
+	if (str_cmp_S("open")){
+		return(OPEN);
+	}
+	if (str_cmp_S("close")){
+		return(CLOSE);
 	}
 	if (str_cmp_S("quit")){
 		return(QUIT);

@@ -11,15 +11,14 @@ exit::~exit(){
 
 }
 
-void exit::Init(uint index){
+void exit::Init(uint index, room* map){
 
 	name = new string(exitnamearray[index]);
 	desc = new string(exitdescarray[index]);
 
-	nature = EXIT;
 
-	src = &(worldp->map[exitsrcarray[index]]);
-	dst = &(worldp->map[exitdstarray[index]]);
+	src = &(map[exitsrcarray[index]]);
+	dst = &(map[exitdstarray[index]]);
 
 	isopen = exitisopenarray[index];
 	islocked = exitislockedarray[index];
@@ -29,3 +28,34 @@ void exit::Init(uint index){
 	content = NULL;
 
 }
+
+
+void exit::open(){
+
+	if (!isopen){
+		if (!islocked){
+			isopen = true;
+		}
+		else{
+			printf("\ndoor locked!\n");
+		}
+	}
+	else{
+		printf("\nalready open!\n");
+	}
+}
+
+
+void exit::close(){
+
+	if (isopen){
+		isopen = false;
+	}
+	else{
+		printf("\nalready closed!\n");
+	}
+
+
+
+}
+

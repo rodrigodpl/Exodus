@@ -22,25 +22,6 @@ public:
 
 	}
 
-	dyn_array(const dyn_array& copyfrom){
-
-		capacity = copyfrom.capacity;
-		buffer = new TYPE[capacity];
-
-
-
-		int i;
-		for (i = 0; i < copyfrom.num_elem; i++){
-
-			buffer[i] = copyfrom.buffer[i];
-
-		}
-
-		num_elem = copyfrom.num_elem;
-
-
-	}
-
 	~dyn_array(){
 
 		delete[] buffer;
@@ -56,7 +37,7 @@ public:
 
 		if (num_elem == capacity){
 
-			capacity += 5;
+			capacity += DYN_ARR_BUFFER_BLOCK;
 			TYPE* aux_buffer = new TYPE[capacity];
 
 			for (i = 0; i < num_elem; i++){
@@ -69,37 +50,6 @@ public:
 		}
 
 		buffer[num_elem++] = value;
-
-	}
-
-
-
-	void pushfront(const TYPE& value){
-
-		uint i;
-
-		if (num_elem == capacity){
-
-			capacity += 5;
-			TYPE* aux_buffer = new TYPE[capacity];
-
-			for (i = 0; i < num_elem; i++){
-				aux_buffer[i] = buffer[i];
-			}
-			delete[] buffer;
-			buffer = aux_buffer;
-
-
-		}
-
-		for (i = num_elem; i > 0; i--){
-
-			buffer[i] = buffer[i - 1];
-
-		}
-
-		buffer[0] = value;
-		num_elem++;
 
 	}
 
@@ -124,6 +74,8 @@ public:
 		num_elem--;
 
 	}
+
+
 
 };
 

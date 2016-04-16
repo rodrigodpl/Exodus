@@ -19,12 +19,14 @@ void item::Init(uint index){
 	name = new string(itemnamearray[index]);
 	desc = new string(itemdescarray[index]);
 
-	nature = ITEM;
-
 	itemslot = itemslotarray[index];
 	iscontainer = itemiscontarray[index];
+	initial_location = itemlocarray[index];
 
 	if (iscontainer){
-		content = new dyn_array<entity>(ITEM_INV_SIZE);
+		content = new dyn_array<entity*>(ITEM_INV_SIZE);
+	}
+	else{
+		content = NULL;
 	}
 }

@@ -6,7 +6,6 @@
 
 class room;
 
-
 class exit : public entity{
 
 public:
@@ -19,9 +18,10 @@ public:
 
 public:
 
-
 	~exit();
-	void Init(uint index);
+	void Init(uint index, room* map);
+	void open();
+	void close();
 
 
 };

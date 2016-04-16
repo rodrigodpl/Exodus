@@ -3,16 +3,13 @@
 
 //defines:
 
+#define DYN_ARR_BUFFER_BLOCK 3
+#define CONTINUE 1
+#define QUIT_GAME 0
 
 #define ROOM_NUM 16
 #define EXIT_NUM 22
 #define ITEM_NUM 15
-
-#define NULL 0
-#define ERROR 0
-#define SUCCESS 1
-#define NEWLINE 10
-#define SPACE_KEY 32
 
 #define ROOM_INV_SIZE 10
 #define ITEM_INV_SIZE 10
@@ -34,6 +31,7 @@ enum equip_slots{
 	BELT_SLOT,
 	LEG_SLOT,
 	FOOT_SLOT
+
 };
 
 
@@ -91,20 +89,20 @@ const uint exitdirarray[EXIT_NUM] = { 1, 3, 0, 2, 0, 2, 3, 1, 3, 1, 3, 1, 2, 0, 
 //item data:
 
 const char itemnamearray[ITEM_NUM][50]
-{ "Security Storage", "Security Dormitory", "Security Dormitory", "East Main Room", "Right Engine Room",
-"Machinery Room", "West Main Room", "East Main Room", "East Main Room", "Cryogenesis Deposit",
-"Cryogenesis Deposit", "Machinery Room", "Oxygen Production", "West Main Room", "Command Booth"}; //insert data//
+{ "knife", "gun", "key", "vest", "food",
+"health pack", "boots", "tools", "backpack", "helmet",
+"crowbar", "poison", "belt", "pants", "flashlight"}; //insert data//
 const char itemdescarray[ITEM_NUM][120]
-{ "A broken door leads to what seems military supplies", "A room where the security personal sleep and train",
-"A room where the security personal sleep and train", "The east zone of the great room you are in", "The right piece of the ship engine glows from here",
-"The room from where the ship was propulsed", "The west zone of the great room you are in", "The east zone of the great room you are in",
-"The east zone of the great room you are in", "A very cold room where people were stored in cryogenesis", "A very cold room where people were stored in cryogenesis",
-"The room from where the ship was propulsed", "A room full of vegetation to produce the vital oxygen", "the west zone of the great room you are in",
-"The zone where the captain of the ship would have commanded the machine"};
+{ "knife", "gun", "key", "vest", "food",
+"health pack", "boots", "tools", "backpack", "helmet",
+"crowbar", "poison", "belt", "pants", "flashlight"};
 
-const bool itemiscontarray[ITEM_NUM] = { 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-const int itemslotarray[ITEM_NUM] = { 3, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, 5, -1 };
+const bool itemiscontarray[ITEM_NUM] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
+const int itemslotarray[ITEM_NUM] = 
+{ RIGHT_HAND_SLOT, RIGHT_HAND_SLOT, -1, CHEST_SLOT, -1, -1, FOOT_SLOT,
+-1, SHOULDER_SLOT, HEAD_SLOT, RIGHT_HAND_SLOT, -1, BELT_SLOT, LEG_SLOT, LEFT_HAND_SLOT };
 // -1 if not equipable
+const int itemlocarray[ITEM_NUM] = { 5, 6, 3, 11, 8, 12, 12, 4, 6, 13, 2, 4, 9, 10, 1};
 
 //logic actions enums:
 enum subjects{
@@ -115,19 +113,12 @@ enum subjects{
 	WEST,
 	PLAYER_ITEM,
 	ROOM_ITEM,
-	CURRENT_ROOM
-
+	CURRENT_ROOM,
+	INVENTORY, 
+	PLAYER_EQUIP,
+	PLAYER_EQUIPPED_ITEM
 };
 
-
-enum natureclasses{
-
-	ITEM,
-	ROOM,
-	PLAYER,
-	EXIT
-
-};
 
 enum actions{
 
@@ -135,6 +126,8 @@ enum actions{
 	LOOK,
 	PICK,
 	DROP,
+	OPEN,
+	CLOSE,
 	HELP,
 	QUIT,
 	INSERT,

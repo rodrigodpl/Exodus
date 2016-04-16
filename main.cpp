@@ -5,21 +5,20 @@
 int main(void){
 
 	world main_world;
+
 	main_world.Init();
 
-	char buffer[200];
-	fgets(buffer, 200, stdin);
-	string player_input(buffer);
+	while (true){
 
-	main_world.look(CURRENT_ROOM, player_input); //player input should a void string//
+		main_world.recurrent_look();
+		char gameplay_buffer[200];
+		fgets(gameplay_buffer, 200, stdin);
+		string player_input(gameplay_buffer);
 
-	while (main_world.executecommand(player_input)){
-
-		char buffer[200];
-		fgets(buffer, 200, stdin);
-		string player_input(buffer);
+		if (main_world.executecommand(player_input) == QUIT_GAME){
+			break;
+		}
 	} 
-
-	return(0);
+	return(1);
 
 }
