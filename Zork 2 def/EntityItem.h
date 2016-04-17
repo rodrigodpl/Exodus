@@ -4,21 +4,18 @@
 #include "Entity.h"
 #include "Data.h"
 
-
 class item : public entity{
 
 public:
 
 	int itemslot;
 	bool iscontainer;
-	int initial_location;
+	uint initial_location;
 
 public:
 
-
 	~item();
 	void Init(uint index);
-
 
 };
 

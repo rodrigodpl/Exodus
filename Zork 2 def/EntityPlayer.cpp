@@ -10,7 +10,7 @@ void player::Init(){
 	name = NULL;
 	desc = NULL;
 
-	content = new dyn_array<entity*>(PLAYER_INIT_INVSIZE);
+	content = new dyn_array<entity*>(INIT_CONTENT_SIZE);
 
 	uint i;
 	for (i = 0; i < MAX_EQUIP_SLOTS; i++){
@@ -42,7 +42,7 @@ void player::move(exit* direction){
 
 }
 
-void player::equip(string itemname, int origin){
+void player::equip(string& itemname, int origin){
 
 	item* item_to_equip;
 	uint i;
@@ -58,29 +58,42 @@ void player::equip(string itemname, int origin){
 	item_to_equip = (item*)origin_ent->searchitem(itemname);
 
 	if (item_to_equip != NULL){
-		equippeditems[item_to_equip->itemslot] = item_to_equip;
+		if (item_to_equip->itemslot != ERROR){
+			if (equippeditems[item_to_equip->itemslot] == NULL){
+				equippeditems[item_to_equip->itemslot] = item_to_equip;
 
-		for (i = 0; i < origin_ent->content->num_elem; i++){
+				for (i = 0; i < origin_ent->content->num_elem; i++){
 
-			if (itemname.str_cmp_S(origin_ent->content->buffer[i]->name->str)){
-				origin_ent->content->erase(i);
-				return;
+					if (itemname.str_cmp_S(origin_ent->content->buffer[i]->name->str)){
+						origin_ent->content->erase(i);
+						return;
+					}
+				}
 			}
+			else{
+				printf("\nYou have already an item equipped in that slot!. Unequip it to continue\n");
+			}
+		}
+		else{ 
+			printf("\nThat item is not equipable!\n"); 
 		}
 	}
 
 }
 
-void player::unequip(string itemname){
+void player::unequip(string& itemname){
 
 	uint i;
 
 	for (i = 0; i < MAX_EQUIP_SLOTS; i++){
 		if (equippeditems[i] != NULL){
-			if (itemname.str_cmp_S(equippeditems[i]->name->str)){
+			if (itemname.str_cmp_S(equippeditems[i]->name->str) && content->num_elem <= MAX_CONTENT_SIZE){
 				content->pushback(equippeditems[i]);
 				equippeditems[i] = NULL;
 			}
+		}
+		else{
+			printf("\nno item equipped with that name!\n");
 		}
 	}
 
@@ -89,11 +102,10 @@ void player::unequip(string itemname){
 
 void player::extract(char* second_subject, string subject_str, world* this_world){
 
-	// Discard preposition//
 	string old_container_str(second_subject);
 	int old_container_class = old_container_str.readsubject(this_world);
 
-	if (old_container_class != -1){
+	if (old_container_class != ERROR){
 		if (old_container_class == PLAYER_ITEM){
 			currentroom->getitem(searchitem(old_container_str), subject_str);
 		}
@@ -114,7 +126,7 @@ void player::insert(char* second_subject, int subject, string subject_str, world
 	entity* new_container;
 
 
-	if (new_container_class != -1){
+	if (new_container_class != ERROR){
 		if (subject == PLAYER_ITEM){
 			if (new_container_class == PLAYER_ITEM){
 				new_container = searchitem(new_container_str);

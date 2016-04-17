@@ -26,6 +26,7 @@ string::~string(){
 	uint i;
 
 	for (i = 0; i > str_len(); i++){
+
 		delete str;
 		str++;
 	}
@@ -41,7 +42,7 @@ dyn_array<string*>* string::tokenize(){
 
 	while (str[i] != '\0'){
 
-		char* word_buffer = new char[50];;
+		char* word_buffer = new char[MAX_BUFFER_LEN];;
 		while (str[i] != ' ' && str[i] != ',' && str[i] != '.' && str[i] != '\0' && str[i] != '\n'){
 			word_buffer[j] = str[i];
 			i++;
@@ -50,13 +51,20 @@ dyn_array<string*>* string::tokenize(){
 
 		word_buffer[j] = '\0';
 
-		string* word = new string(word_buffer);
-		array_pointer->pushback(word);
+		if (j != 0){
+			string* word = new string(word_buffer);
+			array_pointer->pushback(word);
+		}
 		i++;
 		delete[] word_buffer;
 		j = 0;
 	}
-	return (array_pointer);
+	if (array_pointer->num_elem == 0){
+		return(NULL);
+	}
+	else{
+		return (array_pointer);
+	}
 
 }
 
@@ -75,7 +83,7 @@ void string::strcpy_s(const char* src, uint max_str_len, char* dst){
 
 }
 
-unsigned int string::str_len() const{
+uint string::str_len() const{
 
 	uint i;
 
@@ -90,7 +98,7 @@ unsigned int string::str_len() const{
 	return(0);
 }
 
-unsigned int string::str_len_char(const char* src) const{
+uint string::str_len_char(const char* src) const{
 
 	uint i;
 
@@ -105,7 +113,7 @@ unsigned int string::str_len_char(const char* src) const{
 	return(0);
 }
 
-bool string::str_cmp_S(const char* str2){
+bool string::str_cmp_S(const char* str2) const{
 
 	uint i;
 
@@ -124,7 +132,7 @@ bool string::str_cmp_S(const char* str2){
 }
 
 
-int string::readsubject(world* worldp){
+int string::readsubject(world* worldp) const{
 
 	if (str_cmp_S("north") || str_cmp_S("n")){
 		return(NORTH);
@@ -179,7 +187,7 @@ int string::readsubject(world* worldp){
 }
 
 
-int string::readaction(){
+int string::readaction() const{
 
 	if (str_cmp_S("move")){
 		return(MOVE);

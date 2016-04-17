@@ -25,23 +25,17 @@ void world::Init(){
 	for (index = 0; index < ITEM_NUM; index++){
 
 		itemp[index].Init(index);
-
 	}
 
 	for (index = 0; index < ROOM_NUM; index++){
 
 		map[index].Init(index, itemp);
-
 	}
 
 	for (index = 0; index < EXIT_NUM; index++){
 
 		exitp[index].Init(index, map);
-
-
 	}
-
-	
 
 	playerp->Init();
 	playerp->currentroom = &(map[INITIAL_ROOM]);
@@ -52,22 +46,25 @@ void world::Init(){
 bool world::executecommand(string& player_input){
 
 	dyn_array<string*>* player_inp_tokenized = player_input.tokenize();
-	int word_number = player_inp_tokenized->num_elem;
+	if (player_inp_tokenized == NULL){
+		printf("\nempty command!\n");
+		return(CONTINUE);
+	}
+	uint word_number = player_inp_tokenized->num_elem;
 
 	if (word_number >= 2){
 
-		string action_str(player_inp_tokenized->buffer[0]->str);
-		string subject_str(player_inp_tokenized->buffer[1]->str);
+		string action_str(player_inp_tokenized->buffer[VERB]->str);
+		string subject_str(player_inp_tokenized->buffer[SUBJECT]->str);
 
 		int action = action_str.readaction();
 		int subject = subject_str.readsubject(this);
 
-		if (action == -1){
+		if (action == ERROR){
 			printf("\nI didn't understood what you want to do. Check help if in doubt.\n");
 		}
-		else if (subject == -1 && action != EXTRACT){  // action != EXTRACT because of further item search in extract case// 
+		else if (subject == ERROR && action != EXTRACT){  // action != EXTRACT because of further item search in extract case// 
 			printf("\nI just understood you as fas as you want to %s\n", action_str.str);
-
 		}
 
 		else{
@@ -81,7 +78,7 @@ bool world::executecommand(string& player_input){
 
 			case LOOK:
 
-				look(subject, subject_str.str);
+				look(subject, subject_str);
 				break;
 
 			case OPEN:
@@ -91,7 +88,7 @@ bool world::executecommand(string& player_input){
 					exit_to_open->open();
 				}
 				else{
-					printf("\nno exit in that direction");
+					printf("\nno exit in that direction\n");
 				}
 				break;
 
@@ -102,7 +99,7 @@ bool world::executecommand(string& player_input){
 					exit_to_close->close();
 				}
 				else{
-					printf("\nno exit in that direction");
+					printf("\nno exit in that direction\n");
 				}
 				break;
 
@@ -137,7 +134,7 @@ bool world::executecommand(string& player_input){
 			case INSERT:
 
 				if (word_number >= 4){
-					playerp->insert(player_inp_tokenized->buffer[3]->str, subject, subject_str, this);
+					playerp->insert(player_inp_tokenized->buffer[SECOND_SUBJECT]->str, subject, subject_str, this);
 				}
 				else{
 					printf("\n I just understood you as far as you want to insert %s into something", subject_str.str);
@@ -148,7 +145,7 @@ bool world::executecommand(string& player_input){
 			case EXTRACT:
 
 				if (word_number >= 4){
-					playerp->extract(player_inp_tokenized->buffer[3]->str, subject_str, this);
+					playerp->extract(player_inp_tokenized->buffer[SECOND_SUBJECT]->str, subject_str, this);
 				}
 				else{
 					printf("\n I just understood you as far as you want to exctract %s from something", subject_str.str);
@@ -158,7 +155,7 @@ bool world::executecommand(string& player_input){
 
 			case HELP:
 
-				printf("help. -------");
+				printf("%s", help_text);
 				break;
 
 			case QUIT:
@@ -172,7 +169,7 @@ bool world::executecommand(string& player_input){
 		}
 	}
 	else{
-		string action_str(player_inp_tokenized->buffer[0]->str);
+		string action_str(player_inp_tokenized->buffer[VERB]->str);
 		int action = action_str.readaction();
 		int direction = action_str.readsubject(this);
 
@@ -180,9 +177,11 @@ bool world::executecommand(string& player_input){
 			playerp->move(searchexit(playerp->currentroom, direction));
 		}
 		else if (action == HELP){
-			printf("help:----------");
+			printf("%s", help_text);
 		}
 		else if (action == QUIT){
+
+			delete player_inp_tokenized;
 			return (QUIT_GAME);
 		}
 		else{
@@ -196,12 +195,12 @@ bool world::executecommand(string& player_input){
 }
 
 
-exit* world::searchexit(room* src, int direction){
+exit* world::searchexit(room* src, uint direction) const{
 
 	uint i;
 	for (i = 0; i < EXIT_NUM; i++){
-		if (exitp[i].src == src && exitp[i].dir == direction){
 
+		if (exitp[i].src == src && exitp[i].dir == direction){
 			return(&exitp[i]);
 		}
 	}
@@ -209,46 +208,43 @@ exit* world::searchexit(room* src, int direction){
 	return(NULL);
 }
 
-void world::look(int origin, string name){
+void world::look(int origin, string& name){
 
 	entity* subject = NULL;
 	uint i;
 
 	if (origin == NORTH){
-		subject = (entity*)searchexit(playerp->currentroom, NORTH);
+		subject = searchexit(playerp->currentroom, NORTH);
 	}
 	else if (origin == EAST){
-		subject = (entity*)searchexit(playerp->currentroom, EAST);
+		subject = searchexit(playerp->currentroom, EAST);
 	}
 	else if (origin == SOUTH){
-		subject = (entity*)searchexit(playerp->currentroom, SOUTH);
+		subject = searchexit(playerp->currentroom, SOUTH);
 	}
 	else if (origin == WEST){
-		subject = (entity*)searchexit(playerp->currentroom, WEST);
+		subject = searchexit(playerp->currentroom, WEST);
 	}
 	else if (origin == PLAYER_ITEM){
-
 		subject = playerp->searchitem(name);
 	}
 	else if (origin == ROOM_ITEM){
-
 		subject = playerp->currentroom->searchitem(name);
-		
 	}
 	else if (origin == CURRENT_ROOM){
-		subject = (entity*)playerp->currentroom;
+		subject = playerp->currentroom;
 	}
 	else if (origin == INVENTORY){
 
 		if (playerp->content->num_elem){
+
 			printf("It contains %d elements: ", playerp->content->num_elem);
 			for (i = 0; i < playerp->content->num_elem; i++){
 				printf("\n%s, %s\n", playerp->content->buffer[i]->name->str, playerp->content->buffer[i]->desc->str);
 			}
 		}
 		else{
-			printf("\nemptyinventory\n");
-			
+			printf("\nempty inventory!\n");
 		}
 		return;
 	}
@@ -260,7 +256,7 @@ void world::look(int origin, string name){
 		printf("\n CHEST_SLOT: %s", playerp->equippeditems[CHEST_SLOT] == NULL ? "nothing" : playerp->equippeditems[CHEST_SLOT]->name->str);
 		printf("\n BELT_SLOT: %s", playerp->equippeditems[BELT_SLOT] == NULL ? "nothing" : playerp->equippeditems[BELT_SLOT]->name->str);
 		printf("\n LEG_SLOT: %s", playerp->equippeditems[LEG_SLOT] == NULL ? "nothing" : playerp->equippeditems[LEG_SLOT]->name->str);
-		printf("\n FOOT_SLOT: %s", playerp->equippeditems[FOOT_SLOT] == NULL ? "nothing" : playerp->equippeditems[FOOT_SLOT]->name->str);
+		printf("\n FOOT_SLOT: %s", playerp->equippeditems[FEET_SLOT] == NULL ? "nothing" : playerp->equippeditems[FEET_SLOT]->name->str);
 		return;
 	}
 	else if (origin == PLAYER_EQUIPPED_ITEM){
@@ -268,6 +264,7 @@ void world::look(int origin, string name){
 		for (i = 0; i < MAX_EQUIP_SLOTS; i++){
 
 			if (playerp->equippeditems[i] != NULL){
+
 				if (name.str_cmp_S(playerp->equippeditems[i]->name->str)){
 					printf("\n%s, %s\n", playerp->equippeditems[i]->name->str, playerp->equippeditems[i]->desc->str);
 					return;
@@ -283,6 +280,7 @@ void world::look(int origin, string name){
 
 		if (subject->content != NULL){
 			if (subject->content->num_elem){
+
 				printf("It contains %d elements: ", subject->content->num_elem);
 				for (i = 0; i < subject->content->num_elem; i++){
 					printf("\n%s, %s\n", subject->content->buffer[i]->name->str, subject->content->buffer[i]->desc->str);
@@ -291,7 +289,7 @@ void world::look(int origin, string name){
 		}
 	}
 	else{
-		printf("\nThere's no such thing!");
+		printf("\nThere's no such thing there!\n");
 	}
 }
 
@@ -302,6 +300,7 @@ void world::recurrent_look(){
 	printf("\n%s, %s\n", playerp->currentroom->name->str, playerp->currentroom->desc->str);
 
 	if (playerp->currentroom->content->num_elem){
+
 		printf("It contains %d elements: ", playerp->currentroom->content->num_elem);
 		for (i = 0; i < playerp->currentroom->content->num_elem; i++){
 			printf("\n%s\n", playerp->currentroom->content->buffer[i]->name->str);

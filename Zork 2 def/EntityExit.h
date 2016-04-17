@@ -23,7 +23,6 @@ public:
 	void open();
 	void close();
 
-
 };
 
 

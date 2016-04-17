@@ -19,7 +19,7 @@ public:
 public:
 
 	void getitem(entity* old_container, string& itemname);
-	entity* searchitem(string& itemname);
+	entity* searchitem(string& itemname) const;
 
 };
 

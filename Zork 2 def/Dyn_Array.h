@@ -14,18 +14,16 @@ public:
 
 	dyn_array(uint ext_capacity){
 
-
 		capacity = ext_capacity;
 
 		buffer = new TYPE[capacity];
 
-
 	}
+
 
 	~dyn_array(){
 
 		delete[] buffer;
-
 
 	}
 
@@ -33,7 +31,6 @@ public:
 	void pushback(const TYPE& value){
 
 		uint i;
-
 
 		if (num_elem == capacity){
 
@@ -43,14 +40,12 @@ public:
 			for (i = 0; i < num_elem; i++){
 				aux_buffer[i] = buffer[i];
 			}
+
 			delete[] buffer;
 			buffer = aux_buffer;
-
-
 		}
 
 		buffer[num_elem++] = value;
-
 	}
 
 
@@ -60,7 +55,6 @@ public:
 
 			return(buffer[index]);
 		}
-
 	}
 
 
@@ -72,7 +66,6 @@ public:
 		}
 
 		num_elem--;
-
 	}
 
 

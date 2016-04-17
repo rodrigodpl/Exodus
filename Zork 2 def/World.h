@@ -16,17 +16,15 @@ public:
 	room* map;
 	exit* exitp;
 	item* itemp;
-	
 
 public:
 
 	~world();
 	void Init();
 	bool executecommand(string& player_input);
-	exit* searchexit(room* src, int direction);
-	void look(int origin, string lookat);
+	exit* searchexit(room* src, uint direction) const;
+	void look(int origin, string& lookat);
 	void recurrent_look();
-
 
 };
 

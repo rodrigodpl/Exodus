@@ -17,7 +17,7 @@ void room::Init(uint index, item* item_list){
 	name = new string(roomnamearray[index]);
 	desc = new string(roomdescarray[index]);
 
-	content = new dyn_array<entity*>(ROOM_INV_SIZE);
+	content = new dyn_array<entity*>(INIT_CONTENT_SIZE);
 
 	uint i;
 	for (i = 0; i < ITEM_NUM; i++){
