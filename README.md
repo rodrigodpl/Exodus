@@ -11,6 +11,8 @@ EXCTRACT/INSERT: inserts or extracts an item from a container. Type insert, the 
 EQUIP/UNEQUIP: equips or unequips the related item. Type equip/unequip and the item name to use.        
 QUIT: exits the game.
 
+Special feature: events raised by the number of turns the player has spent.
+
 
 Author: Rodrigo De Pedro     
 Github link: https://github.com/rodrigodpl/Zork_assignement-2
